@@ -90,7 +90,7 @@
           var z,
               buttons = btnGroups[y].data,
               btnGroupContainer = $('<div/>', {
-                                    'class': 'btn-group'
+                                    'class': this.__defaultClass('buttonGroup')
                                   });
 
           for (z=0;z<buttons.length;z++) {
@@ -98,16 +98,17 @@
                 buttonContainer, buttonIconContainer,
                 buttonHandler = ns+'-'+button.name,
                 buttonIcon = this.__getIcon(button.icon),
+                btnClass = button.btnClass ? button.btnClass : this.__defaultClass('button'),
                 btnText = button.btnText ? button.btnText : '',
-                btnClass = button.btnClass ? button.btnClass : 'btn',
                 tabIndex = button.tabIndex ? button.tabIndex : '-1',
                 hotkey = typeof button.hotkey !== 'undefined' ? button.hotkey : '',
                 hotkeyCaption = typeof jQuery.hotkeys !== 'undefined' && hotkey !== '' ? ' ('+hotkey+')' : '';
 
             // Construct the button object
             buttonContainer = $('<button></button>');
-            buttonContainer.text(' ' + this.__localize(btnText)).addClass('btn-default btn-sm').addClass(btnClass);
-            if(btnClass.match(/btn\-(primary|success|info|warning|danger|link)/)){
+            buttonContainer.text(' ' + this.__localize(btnText)).addClass(this.__defaultClass('buttonDefault')).addClass(btnClass);
+
+            if(btnClass.match(/btn\-(primary|success|info|warning|danger|link)/) && this.$options.iconlibrary !== 'semantic'){
                 buttonContainer.removeClass('btn-default');
             }
             buttonContainer.attr({
@@ -121,7 +122,8 @@
             if (button.toggle === true){
               buttonContainer.attr('data-toggle', 'button');
             }
-            buttonIconContainer = $('<span/>');
+
+            buttonIconContainer = this.$options.iconlibrary === 'semantic' ? $('<i/>') : $('<span/>');
             buttonIconContainer.addClass(buttonIcon);
             buttonIconContainer.prependTo(buttonContainer);
 
@@ -207,6 +209,11 @@
     return typeof src == 'object' ? src[this.$options.iconlibrary] : src;
   }
 
+  , __defaultClass: function (target) {
+
+    return this.$options.defaultclass[this.$options.iconlibrary][target];
+  }
+
   , setFullscreen: function(mode) {
     var $editor = this.$editor,
         $textarea = this.$textarea;
@@ -246,7 +253,7 @@
       if (this.$editor === null) {
         // Create the panel
         var editorHeader = $('<div/>', {
-                            'class': 'md-header btn-toolbar'
+                            'class': 'md-header buttons'
                             });
 
         // Merge the main & additional button groups together
@@ -327,7 +334,7 @@
           handler.push(saveHandler);
           callback.push(options.onSave);
 
-          editorFooter.append('<button class="btn btn-success" data-provider="'
+          editorFooter.append('<button class="button success data-provider="'
                               + ns
                               + '" data-handler="'
                               + saveHandler
@@ -900,7 +907,7 @@
           name: 'cmdBold',
           hotkey: 'Ctrl+B',
           title: 'Bold',
-          icon: { glyph: 'glyphicon glyphicon-bold', fa: 'fa fa-bold', 'fa-3': 'icon-bold' },
+          icon: { glyph: 'glyphicon glyphicon-bold', fa: 'fa fa-bold', 'fa-3': 'icon-bold', semantic: 'icon bold' },
           callback: function(e){
             // Give/remove ** surround the selection
             var chunk, cursor, selected = e.getSelection(), content = e.getContent();
@@ -930,7 +937,7 @@
           name: 'cmdItalic',
           title: 'Italic',
           hotkey: 'Ctrl+I',
-          icon: { glyph: 'glyphicon glyphicon-italic', fa: 'fa fa-italic', 'fa-3': 'icon-italic' },
+          icon: { glyph: 'glyphicon glyphicon-italic', fa: 'fa fa-italic', 'fa-3': 'icon-italic', semantic: 'icon italic' },
           callback: function(e){
             // Give/remove * surround the selection
             var chunk, cursor, selected = e.getSelection(), content = e.getContent();
@@ -960,7 +967,7 @@
           name: 'cmdHeading',
           title: 'Heading',
           hotkey: 'Ctrl+H',
-          icon: { glyph: 'glyphicon glyphicon-header', fa: 'fa fa-header', 'fa-3': 'icon-font' },
+          icon: { glyph: 'glyphicon glyphicon-header', fa: 'fa fa-header', 'fa-3': 'icon-font', semantic: 'icon header' },
           callback: function(e){
             // Append/remove ### surround the selection
             var chunk, cursor, selected = e.getSelection(), content = e.getContent(), pointer, prevChar;
@@ -997,7 +1004,7 @@
           name: 'cmdUrl',
           title: 'URL/Link',
           hotkey: 'Ctrl+L',
-          icon: { glyph: 'glyphicon glyphicon-link', fa: 'fa fa-link', 'fa-3': 'icon-link' },
+          icon: { glyph: 'glyphicon glyphicon-link', fa: 'fa fa-link', 'fa-3': 'icon-link', semantic: 'linkify icon' },
           callback: function(e){
             // Give [] surround the selection and prepend the link
             var chunk, cursor, selected = e.getSelection(), content = e.getContent(), link;
@@ -1026,7 +1033,7 @@
           name: 'cmdImage',
           title: 'Image',
           hotkey: 'Ctrl+G',
-          icon: { glyph: 'glyphicon glyphicon-picture', fa: 'fa fa-picture-o', 'fa-3': 'icon-picture' },
+          icon: { glyph: 'glyphicon glyphicon-picture', fa: 'fa fa-picture-o', 'fa-3': 'icon-picture', semantic: 'file image outline icon' },
           callback: function(e){
             // Give ![] surround the selection and prepend the image link
             var chunk, cursor, selected = e.getSelection(), content = e.getContent(), link;
@@ -1061,7 +1068,7 @@
           name: 'cmdList',
           hotkey: 'Ctrl+U',
           title: 'Unordered List',
-          icon: { glyph: 'glyphicon glyphicon-list', fa: 'fa fa-list', 'fa-3': 'icon-list-ul' },
+          icon: { glyph: 'glyphicon glyphicon-list', fa: 'fa fa-list', 'fa-3': 'icon-list-ul', semantic: 'icon list' },
           callback: function(e){
             // Prepend/Give - surround the selection
             var chunk, cursor, selected = e.getSelection(), content = e.getContent();
@@ -1107,7 +1114,7 @@
           name: 'cmdListO',
           hotkey: 'Ctrl+O',
           title: 'Ordered List',
-          icon: { glyph: 'glyphicon glyphicon-th-list', fa: 'fa fa-list-ol', 'fa-3': 'icon-list-ol' },
+          icon: { glyph: 'glyphicon glyphicon-th-list', fa: 'fa fa-list-ol', 'fa-3': 'icon-list-ol', semantic: 'icon unordered list' },
           callback: function(e) {
 
             // Prepend/Give - surround the selection
@@ -1153,7 +1160,7 @@
           name: 'cmdCode',
           hotkey: 'Ctrl+K',
           title: 'Code',
-          icon: { glyph: 'glyphicon glyphicon-asterisk', fa: 'fa fa-code', 'fa-3': 'icon-code' },
+          icon: { glyph: 'glyphicon glyphicon-asterisk', fa: 'fa fa-code', 'fa-3': 'icon-code', semantic: 'icon code' },
           callback: function(e) {
             // Give/remove ** surround the selection
             var chunk, cursor, selected = e.getSelection(), content = e.getContent();
@@ -1192,7 +1199,7 @@
           name: 'cmdQuote',
           hotkey: 'Ctrl+Q',
           title: 'Quote',
-          icon: { glyph: 'glyphicon glyphicon-comment', fa: 'fa fa-quote-left', 'fa-3': 'icon-quote-left' },
+          icon: { glyph: 'glyphicon glyphicon-comment', fa: 'fa fa-quote-left', 'fa-3': 'icon-quote-left', semantic: 'icon quote left' },
           callback: function(e) {
             // Prepend/Give - surround the selection
             var chunk, cursor, selected = e.getSelection(), content = e.getContent();
@@ -1244,7 +1251,7 @@
           title: 'Preview',
           btnText: 'Preview',
           btnClass: 'btn btn-primary btn-sm',
-          icon: { glyph: 'glyphicon glyphicon-search', fa: 'fa fa-search', 'fa-3': 'icon-search' },
+          icon: { glyph: 'glyphicon glyphicon-search', fa: 'fa fa-search', 'fa-3': 'icon-search', semantic: 'icon search' },
           callback: function(e){
             // Check the preview mode and toggle based on this flag
             var isPreview = e.$isPreview,content;
@@ -1270,13 +1277,28 @@
         fullscreenOn: {
           fa: 'fa fa-expand',
           glyph: 'glyphicon glyphicon-fullscreen',
-          'fa-3': 'icon-resize-full'
+          'fa-3': 'icon-resize-full',
+          semantic: 'icon maximize'
         },
         fullscreenOff: {
           fa: 'fa fa-compress',
           glyph: 'glyphicon glyphicon-fullscreen',
-          'fa-3': 'icon-resize-small'
+          'fa-3': 'icon-resize-small',
+          semantic: 'icon maximize'
         }
+      }
+    },
+
+    defaultclass: {
+      semantic: {
+        buttonGroup: 'buttons ui',
+        button: 'button',
+        buttonDefault: 'button small ui'
+      },
+      glyph: {
+        buttonGroup: 'btn-group',
+        button: 'btn',
+        buttonDefault: 'btn-default btn-sm'
       }
     },
 
