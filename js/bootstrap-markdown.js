@@ -108,7 +108,11 @@
             buttonContainer = $('<button></button>');
             buttonContainer.text(' ' + this.__localize(btnText)).addClass(this.__defaultClass('buttonDefault')).addClass(btnClass);
 
-            if(btnClass.match(/btn\-(primary|success|info|warning|danger|link)/) && this.$options.iconlibrary !== 'semantic'){
+            // Remove bootstrap button class if iconLibrary equals semantic.
+            if (this.$options.iconlibrary === 'semantic') {
+              buttonContainer.removeClass('btn btn-sn btn-primary');
+            }
+            else if(btnClass.match(/btn\-(primary|success|info|warning|danger|link)/) && this.$options.iconlibrary !== 'semantic'){
                 buttonContainer.removeClass('btn-default');
             }
             buttonContainer.attr({
@@ -280,7 +284,11 @@
         }
 
         if (options.fullscreen.enable) {
-          editorHeader.append('<div class="md-controls"><a class="md-control md-control-fullscreen" href="#"><span class="'+this.__getIcon(options.fullscreen.icons.fullscreenOn)+'"></span></a></div>').on('click', '.md-control-fullscreen', function(e) {
+          var $iconContain = this.$options.iconlibrary === 'semantic' ? $('<i/>') : $('<span/>'),
+              $fullscreenContain = $('<div class="md-controls"><a class="md-control md-control-fullscreen" href="#"></a></div>');
+          $iconContain.addClass(this.__getIcon(options.fullscreen.icons.fullscreenOn));
+          $fullscreenContain.find('.md-control-fullscreen').append($iconContain);
+          editorHeader.append($fullscreenContain).on('click', '.md-control-fullscreen', function(e) {
               e.preventDefault();
               instance.setFullscreen(true);
           });
@@ -422,10 +430,11 @@
       }
 
       if (options.fullscreen.enable && options.fullscreen !== false) {
-        this.$editor.append('\
-          <div class="md-fullscreen-controls">\
-            <a href="#" class="exit-fullscreen" title="Exit fullscreen"><span class="'+this.__getIcon(options.fullscreen.icons.fullscreenOff)+'"></span></a>\
-          </div>');
+        var $iconContain = this.$options.iconlibrary === 'semantic' ? $('<i/>') : $('<span/>'),
+            $fullscreenContain = $('<div class="md-fullscreen-controls"><a href="#" class="exit-fullscreen" title="Exit fullscreen"></a></div>');
+        $iconContain.addClass(this.__getIcon(options.fullscreen.icons.fullscreenOff));
+        $fullscreenContain.find('.exit-fullscreen').append($iconContain);
+        this.$editor.append($fullscreenContain);
 
         this.$editor.on('click', '.exit-fullscreen', function(e) {
           e.preventDefault();
@@ -1284,7 +1293,7 @@
           fa: 'fa fa-compress',
           glyph: 'glyphicon glyphicon-fullscreen',
           'fa-3': 'icon-resize-small',
-          semantic: 'icon maximize'
+          semantic: 'icon maximize inverted'
         }
       }
     },
